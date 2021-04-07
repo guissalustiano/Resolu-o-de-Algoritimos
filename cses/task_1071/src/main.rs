@@ -2,9 +2,8 @@ use std::cmp::max;
 use std::io::{self, BufRead};
 
 #[inline]
-// PA de 2° ordem
 fn diagonal_value(n: isize) -> isize {
-    (1..n).map(|x| 2 * x).sum::<isize>() + 1
+    n * n - n + 1
 }
 
 fn value(x: isize, y: isize) -> isize {
