@@ -1,6 +1,6 @@
 use std::io::{BufRead, BufReader};
 
-fn _read_input() -> usize {
+fn read_input() -> usize {
     let mut input = BufReader::new(std::io::stdin());
     let mut line = String::from("");
     input.read_line(&mut line).unwrap();
@@ -32,31 +32,37 @@ impl HanoiTower {
         self.left.len() + self.middle.len() + self.right.len()
     }
 
-    fn mov_one(from: &mut Vec<usize>, to: &mut Vec<usize>) -> usize {
-        to.push(from.pop().unwrap());
-        return 1;
-    }
-
-    fn mov(from: &mut Vec<usize>, to: &mut Vec<usize>, aux: &mut Vec<usize>, n: usize) -> usize {
+    fn mov(
+        from: &mut (&mut Vec<usize>, &str),
+        to: &mut (&mut Vec<usize>, &str),
+        aux: &mut (&mut Vec<usize>, &str),
+        n: usize,
+    ) {
         if n <= 1 {
-            return HanoiTower::mov_one(from, to);
+            to.0.push(from.0.pop().unwrap());
+            println!("{} {}", from.1, to.1);
+            return;
         }
 
-        HanoiTower::mov(from, aux, to, n - 1) +
-        HanoiTower::mov_one(from, to) + // mov new layer
-        HanoiTower::mov(aux, to, from, n - 1)
+        HanoiTower::mov(from, aux, to, n - 1);
+        HanoiTower::mov(from, to, aux, 1); // mov new layer
+        HanoiTower::mov(aux, to, from, n - 1);
     }
 
-    fn solve(&mut self) -> usize {
+    fn solve(&mut self) {
         let len = self.len();
-        return HanoiTower::mov(&mut self.left, &mut self.middle, &mut self.right, len);
+        return HanoiTower::mov(
+            &mut (&mut self.left, "1"),
+            &mut (&mut self.right, "3"),
+            &mut (&mut self.middle, "2"),
+            len,
+        );
     }
 }
 
 fn main() {
-    let n = 10; // read_input();
+    let n = read_input();
+    println!("{}", 2_u64.pow(n as u32) - 1);
     let mut tower = HanoiTower::new(n);
-    let n_moves = tower.solve();
-    println!("{}", n_moves);
-    println!("{:?}", tower);
+    tower.solve();
 }
